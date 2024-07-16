@@ -1,0 +1,178 @@
+/*
+Problem Link : https://practice.geeksforgeeks.org/problems/frequency-of-array-elements-1587115620/1
+Description:
+Your task is to count the frequency of all elements from 1 to N.
+
+Input:
+N = 5
+arr[] = {2, 3, 2, 3, 5}
+P = 5
+Output:
+0 2 2 0 1
+Explanation:
+Counting frequencies of each array element
+We have:
+1 occurring 0 times.
+2 occurring 2 times.
+3 occurring 2 times.
+4 occurring 0 times.
+5 occurring 1 time
+
+
+Source Code:
+
+*/
+/*
+
+//{ Driver Code Starts
+#include<bits/stdc++.h>
+using namespace std;
+// } Driver Code Ends
+
+// 1. BruteForce Soln :: Using two loops give TLE
+class Solution{
+    public:
+    //Function to count the frequency of all elements from 1 to N in the array.
+    void frequencyCount(vector<int>& arr,int N, int P) {
+        sort(arr.begin(), arr.end());
+        vector<int> temp;
+        int count = 0;
+        for(int i = 1; i <= N; i++) {
+            count = 0;
+            for(int j = 0; j < arr.size(); j++) {
+                if(i < arr[j]) break;
+                if(i == arr[j]) {
+                    count++;
+                }
+            }
+            temp.push_back(count);
+        }
+
+        for(int i = 0; i < N; i++) {
+            arr[i] = temp[i];
+        }
+    }
+};
+*/
+
+/*
+// Better than BruteForce
+// T.C => O(nlogn + n) => O(nlogn)
+// S.C => O(n)
+class Solution{
+    public:
+    //Function to count the frequency of all elements from 1 to N in the array.
+    void frequencyCount(vector<int>& arr,int N, int P) {
+         vector<int> ans(N,0);
+        sort(arr.begin(), arr.end());
+        int count = 1;
+        for(int i = 0; i < N; i++) {
+            if(arr[i] <= N) {
+                if(arr[i] == arr[i+1]) count++;
+                else {
+                    ans[arr[i]-1] = count;
+                    count = 1;
+                }
+            }
+        }
+        arr = ans;
+    }
+};
+*/
+
+/* 2. Better than BruteForce Soln
+// T.C => O(n+n) => O(n)
+// S.C => O(n) as a map is used to store frequencies.
+class Solution{
+    public:
+    //Function to count the frequency of all elements from 1 to N in the array.
+      void frequencyCount(vector<int>& arr, int N, int P) {
+    unordered_map<int, int> mp; // unordered_map to store frequency of elements
+
+    // Count frequencies of elements in arr within the range 1 to N
+    for (int i = 0; i < N; i++) {
+        mp[arr[i]]++;
+    }
+
+    // Modify arr[] to store frequencies of numbers from 1 to N
+    for (int i = 1; i <= N; i++) {
+        if (mp.find(i) != mp.end()) {
+            arr[i - 1] = mp[i];
+        } else {
+            arr[i - 1] = 0;
+        }
+    }
+};
+*/
+
+/* 3. Optimal Soln
+// T.C => O(n + n + n) => O(n)
+// S.C => O(1)
+class Solution {
+    public:
+    void frequencyCount(vector<int>& arr,int N, int P) { 
+      int n = arr.size();
+      for(int i = 0; i < n; i++) {
+          if(arr[i] > n) arr[i] = 0; // if elem is > n then we make it 0 as said in
+      }                              // problem statement
+      
+      P = P+1; // incrementing P now all the elements of array are smaller than P
+               // we will use this incremented P as a constant value for adding to
+               // to index-1 value of current index value;
+               // because number of times we add P to that index and at the end 
+               // when we divide we get that number of times
+               // eg: if we add P = 4 => after incrmt => 5 to index 5 two times
+               // ans index 5 value is for eg. 2 so current val becomes 12 now
+               // we divide it by P so we get 12 / 5 => 2
+               // also as all elements are less than P so at end when we divide
+               // by P than the previous value in above case 2 will not affect 
+               // our ans.
+      for(int  i = 0; i < n; i++) {
+          if(arr[i]%P == 0) continue; // we chk for 0 whether 0 is there then conti;
+          arr[arr[i]%P - 1] += P;     // going to ind-1 ans adding P
+      }
+      
+      for(int i = 0; i < n; i++) {
+          arr[i] /= P;                // at end dividing by P to get the final ans
+      }                               // at each position
+    }
+};
+
+
+
+
+//{ Driver Code Starts.
+
+int main() 
+{ 
+	long long t;
+	
+	//testcases
+	cin >> t;
+	
+	while(t--){
+	    
+	    int N, P;
+	    //size of array
+	    cin >> N; 
+	    
+	    vector<int> arr(N);
+	    
+	    //adding elements to the vector
+	    for(int i = 0; i < N ; i++){
+	        cin >> arr[i]; 
+	    }
+        cin >> P;
+        Solution ob;
+        //calling frequncycount() function
+		ob.frequencyCount(arr, N, P); 
+		
+		//printing array elements
+	    for (int i = 0; i < N ; i++) 
+			cout << arr[i] << " ";
+	    cout << endl;
+	}	
+	return 0; 
+}
+
+// } Driver Code Ends
